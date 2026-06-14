@@ -32,3 +32,13 @@ SecurifyAI is an AI-powered cybersecurity threat analysis platform that helps id
 **AI**
 - Google Gemini API
 
+## 🎥 Demo Video
+
+Watch the project demo here:
+
+[▶ Watch Demo](## 🎥 Demo Video
+
+Watch the project demo here:
+
+[▶ Watch Demo](https://youtu.be/suUKnOdVE_8)
+
