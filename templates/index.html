@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecurifyAI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">SecurifyAI</div>
+    <div class="status-badge">AI Agent: <span class="status">Active</span></div>
+  </header>
+
+  <!-- Threat Analysis Panel -->
+  <section class="threat-analysis-panel">
+    <h2>Threat Analysis</h2>
+    <textarea id="log-input" placeholder="Paste your logs here or drag and drop files..." class="log-input"></textarea>
+    <div class="simulation-buttons">
+      <button class="simulate-btn" id="simulate-sql">Simulate SQL Injection</button>
+      <button class="simulate-btn" id="simulate-xss">Simulate XSS</button>
+      <button class="simulate-btn" id="simulate-path">Simulate Path Traversal</button>
+      <button class="simulate-btn" id="simulate-clean">Simulate Clean Traffic</button>
+    </div>
+    <button class="analyze-btn" id="analyze-btn">Analyze Threat</button>
+  </section>
+
+  <!-- AI Agent Workflow Timeline -->
+  <section class="workflow-timeline">
+    <h2>AI Agent Workflow</h2>
+    <div class="timeline">
+      <div class="stage">INPUT</div>
+      <div class="stage">DETECTION</div>
+      <div class="stage">SEVERITY</div>
+      <div class="stage">ROOT CAUSE</div>
+      <div class="stage">REMEDIATION</div>
+      <div class="stage">PATCH GENERATION</div>
+    </div>
+    <div class="progress-animation" id="progress-animation" style="display:none;">Processing...</div>
+  </section>
+
+  <!-- Attack Chain Visualization -->
+  <section class="attack-chain-visualization">
+    <h2>Attack Chain Visualization</h2>
+    <div class="attack-chain">
+      <div class="stage" id="attack-input">Attack Input</div>
+      <div class="arrow">↓</div>
+      <div class="stage" id="threat-detection">Threat Detection</div>
+      <div class="arrow">↓</div>
+      <div class="stage" id="business-impact-chain">Business Impact</div>
+      <div class="arrow">↓</div>
+      <div class="stage" id="recommended-fix">Recommended Fix</div>
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section class="results-section">
+    <h2>Results</h2>
+    <div class="view-toggle">
+      <button class="view-btn" id="developer-view">Developer View</button>
+      <button class="view-btn" id="executive-view">Executive View</button>
+    </div>
+    <div class="developer-view" id="developer-view-section">
+      <h3>Technical Output</h3>
+      <pre class="raw-output" id="raw-output">Raw technical data...</pre>
+      <div class="severity-badges" id="severity-badges">Severity: <span class="badge">N/A</span></div>
+    </div>
+    <div class="executive-view" id="executive-view-section" style="display:none;">
+      <h3>Business Impact</h3>
+      <div class="executive-view" id="executive-view-section" style="display:none;">
+        <h3>Executive Security Summary</h3>
+    
+        <div class="exec-card">
+    
+            <h4>Threat Detected</h4>
+            <p id="exec-threat">-</p>
+    
+            <h4>Risk Level</h4>
+            <p id="exec-severity">-</p>
+    
+            <h4>Business Impact</h4>
+            <p id="exec-impact">-</p>
+    
+            <h4>Recommended Actions</h4>
+            <ul id="exec-actions">
+                <li>No actions available</li>
+            </ul>
+    
+        </div>
+    </div>
+  </section>
+
+  <section class="security-score-card">
+
+    <h2>Security Score</h2>
+
+    <div class="score-container">
+
+        <div class="score-circle">
+            <span id="security-score-value">100</span>/100
+        </div>
+
+        <div class="score-bar">
+            <div id="score-fill"></div>
+        </div>
+
+    </div>
+
+</section>
+
+  <!-- Secure Patch Generator -->
+  <section class="patch-generator">
+    <h2>Secure Patch Generator</h2>
+    <pre class="generated-code"><code id="generated-code">// Generated secure code will appear here...</code></pre>
+    <button class="copy-btn" id="copy-btn">Copy</button>
+    <div class="security-score" id="security-score">Confidence Score: N/A</div>
+    <div>
+      <button id="generate-report-btn">Generate Executive Report</button>
+    </div>
+  </section>
+
+  <!-- Scan History Dashboard -->
+<section class="scan-history">
+  <h2>Scan History</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Threat Type</th>
+        <th>Severity</th>
+      </tr>
+    </thead>
+    <tbody id="scan-history-body">
+      <!-- Scan history will be dynamically populated -->
+    </tbody>
+  </table>
+</section>
+
+  <script>
+
+    // Simulate attacks
+    document.querySelectorAll('.simulate-btn').forEach(button => {
+  button.addEventListener('click', async () => {
+    try {
+      const attackType = button.id.replace('simulate-', '').toLowerCase(); // normalize
+      const response = await fetch(`/simulate/${attackType}`);
+      if (!response.ok) throw new Error('Simulation failed');
+      const data = await response.json();
+      console.log("Fetched log:", attackType, data.logData); // debug
+      document.getElementById('log-input').value = data.logData;
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+});
+
+    // Analyze threat
+    document.getElementById('analyze-btn').addEventListener('click', async () => {
+      const logData = document.getElementById('log-input').value;
+      if (!logData) {
+        alert('Please provide log data before analyzing.');
+        return;
+      }
+
+      document.getElementById('progress-animation').style.display = 'block';
+
+      try {
+        const response = await fetch('/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ logData })
+        });
+        if (!response.ok) throw new Error('Analysis failed');
+
+        const result = await response.json();
+        // Executive View
+
+document.getElementById(
+    "exec-threat"
+).textContent = result.threat_type || "Unknown";
+
+document.getElementById(
+    "exec-severity"
+).textContent = result.severity || "Unknown";
+
+document.getElementById(
+    "exec-impact"
+).textContent = result.root_cause || "No impact available";
+
+// Recommended Actions
+
+let actions = [];
+
+if(result.threat_type === "SQL Injection"){
+    actions = [
+        "Use parameterized queries",
+        "Validate all user input",
+        "Apply least privilege access"
+    ];
+}
+else if(result.threat_type === "XSS"){
+    actions = [
+        "Sanitize user input",
+        "Enable Content Security Policy",
+        "Escape output before rendering"
+    ];
+}
+else if(result.threat_type === "Path Traversal"){
+    actions = [
+        "Validate file paths",
+        "Restrict file access",
+        "Use allowlists"
+    ];
+}
+else{
+    actions = [
+        "Continue monitoring",
+        "Review application logs",
+        "Maintain security updates"
+    ];
+}
+
+
+let score = 100;
+
+switch(result.severity){
+
+    case "Critical":
+        score = 20;
+        break;
+
+    case "High":
+        score = 50;
+        break;
+
+    case "Medium":
+        score = 75;
+        break;
+
+    case "Low":
+        score = 95;
+        break;
+}
+
+document.getElementById(
+    "security-score-value"
+).textContent = score;
+
+document.getElementById(
+    "score-fill"
+).style.width = score + "%";
+
+document.getElementById("exec-actions").innerHTML =
+actions.map(item => `<li>${item}</li>`).join("");
+        document.getElementById('progress-animation').style.display = 'none';
+
+        // Update attack chain visualization
+        document.getElementById('attack-input').textContent = "Attack Input: Received";
+        document.getElementById('threat-detection').textContent = `Threat Detection: ${result.threat_type}`;
+        document.getElementById('business-impact-chain').textContent = `Business Impact: ${result.remediation}`;
+        document.getElementById('recommended-fix').textContent = `Recommended Fix: ${result.patch ? "Patch Available" : "No Fix Required"}`;
+
+        // Update results
+        document.getElementById('raw-output').textContent = JSON.stringify(result, null, 2);
+        document.getElementById('severity-badges').innerHTML = `Severity: <span class="badge">${result.severity}</span>`;
+        document.getElementById('business-impact-summary').textContent = result.remediation;
+        document.getElementById('generated-code').textContent = result.patch || '// No patch required';
+        document.getElementById('security-score').textContent = `Confidence Score: ${result.confidence_score || 'N/A'}`;
+      } catch (err) {
+        document.getElementById('progress-animation').style.display = 'none';
+        alert(err.message);
+      }
+    });
+
+// Fetch and display scan history
+    async function fetchScanHistory() {
+  try {
+    const response = await fetch('/scan-history');
+    if (!response.ok) throw new Error('Failed to fetch history');
+    const history = await response.json();
+    const tbody = document.getElementById('scan-history-body');
+    tbody.innerHTML = '';
+    history.forEach(scan => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${scan.timestamp}</td>
+        <td>${scan.threat_type}</td>
+        <td>${scan.severity}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+// Load history on page load
+fetchScanHistory();
+
+// Optional: auto-refresh every 10 seconds
+setInterval(fetchScanHistory, 10000);
+
+    
+    // Toggle views
+    document.getElementById('developer-view').addEventListener('click', () => {
+      document.getElementById('developer-view-section').style.display = 'block';
+      document.getElementById('executive-view-section').style.display = 'none';
+    });
+    document.getElementById('executive-view').addEventListener('click', () => {
+      document.getElementById('developer-view-section').style.display = 'none';
+      document.getElementById('executive-view-section').style.display = 'block';
+    });
+
+    // Copy generated code
+    document.getElementById('copy-btn').addEventListener('click', () => {
+      const code = document.getElementById('generated-code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Code copied to clipboard!');
+      });
+    });
+
+    // Generate report
+    document.getElementById('generate-report-btn').addEventListener('click', () => {
+      window.open('/generate-report', '_blank');
+    });
+  </script>
+</body>
+</html>
